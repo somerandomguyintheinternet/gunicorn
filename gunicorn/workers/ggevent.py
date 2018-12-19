@@ -10,7 +10,7 @@ from datetime import datetime
 from functools import partial
 import time
 
-_socket = __import__("socket")
+# _socket = __import__("socket")
 
 # workaround on osx, disable kqueue
 if sys.platform == "darwin":
@@ -50,7 +50,8 @@ class GeventWorker(AsyncWorker):
     server_class = None
     wsgi_handler = None
 
-    def patch(self):
+    @classmethod
+    def setup(cls):
         from gevent import monkey
         monkey.noisy = False
 
@@ -64,11 +65,11 @@ class GeventWorker(AsyncWorker):
         patch_sendfile()
 
         # patch sockets
-        sockets = []
-        for s in self.sockets:
-            sockets.append(socket(s.FAMILY, _socket.SOCK_STREAM,
-                fileno=s.sock.fileno()))
-        self.sockets = sockets
+        # sockets = []
+        # for s in self.sockets:
+            # sockets.append(socket(s.FAMILY, _socket.SOCK_STREAM,
+                # fileno=s.sock.fileno()))
+        # self.sockets = sockets
 
     def notify(self):
         super(GeventWorker, self).notify()
@@ -168,8 +169,8 @@ class GeventWorker(AsyncWorker):
     if gevent.version_info[0] == 0:
 
         def init_process(self):
-            # monkey patch here
-            self.patch()
+            # monkey not patch here
+            # self.patch()
 
             # reinit the hub
             import gevent.core
@@ -184,8 +185,8 @@ class GeventWorker(AsyncWorker):
     else:
 
         def init_process(self):
-            # monkey patch here
-            self.patch()
+            # monkey not patch here
+            # self.patch()
 
             # reinit the hub
             from gevent import hub
