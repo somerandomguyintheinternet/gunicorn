@@ -87,7 +87,8 @@ def patch_sendfile():
 
 class EventletWorker(AsyncWorker):
 
-    def patch(self):
+    @classmethod
+    def setup(cls):
         hubs.use_hub()
         eventlet.monkey_patch(os=False)
         patch_sendfile()
@@ -100,7 +101,7 @@ class EventletWorker(AsyncWorker):
 
     def init_process(self):
         super(EventletWorker, self).init_process()
-        self.patch()
+        # self.patch()
 
     def handle_quit(self, sig, frame):
         eventlet.spawn(super(EventletWorker, self).handle_quit, sig, frame)
